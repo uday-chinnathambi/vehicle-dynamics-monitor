@@ -1,0 +1,93 @@
+# =============================================================================
+# .gitignore — STM32 Embedded Firmware (VS Code + CMake + arm-none-eabi-gcc)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CMake build output
+# -----------------------------------------------------------------------------
+build/
+out/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# -----------------------------------------------------------------------------
+# Compiled firmware artifacts
+# -----------------------------------------------------------------------------
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.axf
+
+# Object files and dependency tracking
+*.o
+*.d
+*.su
+
+# Static libraries
+*.a
+
+# -----------------------------------------------------------------------------
+# STM32CubeMX
+# -----------------------------------------------------------------------------
+# Keep: .ioc file (project config), generated Src/, Inc/, Drivers/ if you
+# want them tracked. Ignore only CubeMX metadata.
+*.mxproject
+STM32CubeMX/
+
+# -----------------------------------------------------------------------------
+# VS Code
+# -----------------------------------------------------------------------------
+# Keep: .vscode/launch.json, tasks.json, c_cpp_properties.json
+# Ignore: personal/local settings
+.vscode/settings.json
+.vscode/extensions.json
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+
+# -----------------------------------------------------------------------------
+# OpenOCD
+# -----------------------------------------------------------------------------
+*.log
+openocd.log
+
+# -----------------------------------------------------------------------------
+# Toolchain / OS artifacts
+# -----------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# -----------------------------------------------------------------------------
+# Editor temporaries
+# -----------------------------------------------------------------------------
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# -----------------------------------------------------------------------------
+# Python (if using any host-side scripts)
+# -----------------------------------------------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/

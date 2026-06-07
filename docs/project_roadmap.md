@@ -20,12 +20,12 @@
 
 ## Phase 1 — Environment & Hardware Setup (Days 1–2)
 
-- [ ] Install VS Code extensions: **Cortex-Debug**, **CMake Tools**, and **C/C++**
-- [ ] Install `arm-none-eabi-gcc`, `cmake`, `ninja-build`, and `openocd` (or ST-Link GDB server); verify all are on `PATH`
-- [ ] Install **STM32CubeMX** (standalone); generate HAL init code targeting your board (e.g. Nucleo-F446RE) with **Makefile** output, then adapt to CMake
+- [ x ] Install VS Code extensions: **Cortex-Debug**, **CMake Tools**, and **C/C++**
+- [ x ] Install `arm-none-eabi-gcc`, `cmake`, `ninja-build`, and `openocd` (or ST-Link GDB server); verify all are on `PATH`
+- [ x ] Install **STM32CubeMX** (standalone); generate HAL init code targeting my board (e.g. Nucleo-F4132ZH) with **Makefile** output, then adapt to CMake
 - [ ] Configure system clock, GPIO, I2C, and UART peripherals in CubeMX and re-generate as needed
-- [ ] Write a `CMakeLists.txt` that compiles the CubeMX-generated sources and links the HAL/CMSIS libraries; confirm a clean `cmake --build` produces a `.elf`
-- [ ] Configure `launch.json` and `tasks.json` in VS Code for one-click flash and Cortex-Debug session
+- [ x ] Write a `CMakeLists.txt` that compiles the CubeMX-generated sources and links the HAL/CMSIS libraries; confirm a clean `cmake --build` produces a `.elf`
+- [ x ] Configure `launch.json` and `tasks.json` in VS Code for one-click flash and Cortex-Debug session
 - [ ] Flash a blinky LED via `openocd` / ST-Link to confirm the full build-flash loop works
 - [ ] Wire up MPU-6050 to STM32 (SDA, SCL, VCC, GND); connect USB-to-TTL adapter
 
