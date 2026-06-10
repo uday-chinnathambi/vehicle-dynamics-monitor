@@ -62,3 +62,38 @@ integrates cleanly with Cortex-Debug, and is not tied to ST's tooling.
 **ST-Link GDB Server** is worth knowing about if you ever work inside STM32CubeIDE or need
 faster flash speeds on larger binaries, but for a firmware component project OpenOCD covers
 everything you need.
+
+## Peripherals
+
+### USART vs UART
+
+UART stands for Universal Asynchronous Receiver Transmitter. The key word is asynchronous — the two devices communicating don't share a clock signal. Instead they agree in advance on a speed (baud rate), and each side uses its own internal clock to time the bits.
+
+USART stands for Universal Synchronous Asynchronous Receiver Transmitter. It's a superset of UART — it does everything UART does, but it can also operate in synchronous mode, where a shared clock line is added to the connection. 
+
+| | UART | USART |
+|---|---|---|
+| **Clock line** | None — each side uses its own | Optional shared clock line |
+| **Wires needed** | 2 (TX, RX) | 2 async, or 3 sync (TX, RX, CK) |
+| **Speed** | Up to ~5 Mbps typically | Higher, due to clock synchronisation |
+| **Complexity** | Simple | Slightly more config |
+| **Typical use** | Debug output, GPS, Bluetooth modules, PC communication | Higher-speed peripherals, SPI-like device comms |
+
+**When to use each**
+
+*Async UART* — debug messages, GPS modules, Bluetooth, ESP32, PC communication, USB-to-TTL adapters
+
+*USART synchronous mode* — higher throughput, clock-sensitive peripherals, noisy environments, SPI alternative
+
+**ST-USAGE** : There were ten UART channels on this micro but I am going to use the one that was already configured and linked via ST-Link for simplicity. If needed additional UART to USB like FT232 can be used.
+| Pin name | Function | Virtual COM port |
+|---|---|---|
+| PD8 | USART3 TX | via ST-LINK |
+| PD9 | USART3 RX | via ST-LINK |
+
+### Inter-integrated circuit interface (I2C)
+
+
+
+
+
