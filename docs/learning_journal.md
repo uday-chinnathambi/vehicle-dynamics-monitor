@@ -35,6 +35,13 @@ So in short: CMake owns the logic, Ninja owns the speed. CMake writes the recipe
 
 ## Debuggers
 
+### Introduction
+- A debugger pauses a running program and lets you inspect registers, memory and variables without rebuilding.
+- A debug probe is the hardware bridge between your laptop and the microcontroller (ST-Link, J-Link).
+- SWD and JTAG are the debug interfaces on the microcontroller side. SWD is the standard choice for ARM Cortex-M.
+- GDB issues debug commands. OpenOCD bridges GDB to the debug probe.
+- Compile with -g to include debug symbols in the .elf file.
+
 ### OpenOCD vs ST-Link GDB Server
 
 | | OpenOCD | ST-Link GDB Server |

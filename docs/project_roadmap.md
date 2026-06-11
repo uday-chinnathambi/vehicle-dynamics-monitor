@@ -30,7 +30,7 @@
 - [x] Configure `launch.json` and `tasks.json` in VS Code for one-click flash and Cortex-Debug session
 - [ ] Flash a blinky LED via `openocd` / ST-Link to confirm the full build-flash loop works
 - [ ] Wire up MPU-6050 to STM32 (SDA, SCL, VCC, GND); connect USB-to-TTL adapter
-- [ ] Vendor Unity into `unity/` (copy `unity.c`, `unity.h`, `unity_internals.h` from the Unity repo)
+- [x] Vendor Unity into `unity/` (copy `unity.c`, `unity.h`, `unity_internals.h` from the Unity repo)
 
 ---
 
@@ -112,3 +112,60 @@
 - Integrate RTOS support for task-based execution
 - Support additional outputs (CAN, logging, or structured diagnostics)
 - Extend detection logic to support scoring or severity classification
+
+# Vehicle Dynamics Monitor — Project Draft Folder Structure
+
+```
+vehicle-dynamics-monitor/
+│
+├── .vscode/
+│   ├── launch.json                       ← flash + Cortex-Debug session config
+│   └── tasks.json                        ← CMake build tasks
+│
+├── cmake/
+│   ├── arm-none-eabi.cmake               ← cross-compile toolchain (STM32 target)
+│   └── host-gcc.cmake                    ← host toolchain (for running tests on PC)
+│
+├── Core/
+│   ├── Inc/
+│   │   ├── main.h
+│   │   ├── mpu6050.h                     ← sensor driver interface
+│   │   ├── vehicle_dynamics.h            ← event detection interface (HAL-free)
+│   │   └── uart_logger.h                 ← diagnostics interface
+│   └── Src/
+│       ├── main.c
+│       ├── mpu6050.c                     ← sensor driver (HAL-dependent)
+│       ├── vehicle_dynamics.c            ← pure logic (HAL-free, host-testable)
+│       └── uart_logger.c                 ← UART output (HAL-dependent)
+│
+├── Drivers/
+│   └── STM32F4xx_HAL_Driver/             ← CubeMX-generated HAL & CMSIS
+│
+├── tests/
+│   ├── CMakeLists.txt                    ← test build config (host GCC)
+│   ├── mocks/
+│   │   ├── mock_mpu6050.h                ← CMock-generated mock for sensor driver
+│   │   └── mock_uart_logger.h            ← CMock-generated mock for UART
+│   ├── unit/
+│   │   ├── test_vehicle_dynamics.c       ← event detection logic tests
+│   │   └── test_mpu6050.c               ← sensor data conversion tests
+│   └── integration/
+│       └── test_acquisition_pipeline.c  ← end-to-end acquisition flow tests
+│
+├── unity/
+│   ├── unity.c                           ← Unity test framework (vendored)
+│   ├── unity.h
+│   └── unity_internals.h
+│
+├── CMakeLists.txt                        ← root build config (firmware + test toggle)
+├── .gitignore
+└── README.md
+```
+
+## Notes
+
+- `vehicle_dynamics.c` contains **zero HAL calls** — pure logic only, making it fully testable on the host without mocking the HAL
+- `build/` and `build-test/` are generated at runtime and excluded by `.gitignore`
+- Two separate CMake configurations:
+  - `cmake -B build` → ARM target (firmware, flash to STM32)
+  - `cmake -B build-test -DBUILD_TESTS=ON` → host GCC (unit tests, run on PC)
