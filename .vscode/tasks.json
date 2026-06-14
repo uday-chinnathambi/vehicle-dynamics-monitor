@@ -41,7 +41,7 @@
 				"-c",
 				"port=SWD",
 				"-w",
-				"${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+				"${workspaceFolder}/build/Debug/${workspaceFolderBasename}.elf",
 				"-v",
 				"--rst"
 			],

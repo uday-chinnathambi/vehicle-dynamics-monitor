@@ -6,7 +6,7 @@
     "configurations": [
     {
         "cwd": "${workspaceRoot}",
-        "executable": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+        "executable": "${workspaceFolder}/build/Debug/${workspaceFolderBasename}.elf",
         "name": "Debug with OpenOCD",
         "request": "launch",
         "type": "cortex-debug",
@@ -38,7 +38,7 @@
             "name": "Build & Debug Microcontroller - ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+            "executable": "${workspaceFolder}/build/Debug/${workspaceFolderBasename}.elf",
             // Let CMake extension decide executable: "${command:cmake.launchTargetPath}"
             // Or fixed file path: "${workspaceFolder}/path/to/filename.elf"
             "request": "launch",
