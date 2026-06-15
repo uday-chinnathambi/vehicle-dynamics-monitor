@@ -29,7 +29,7 @@
 - [x] Write a `CMakeLists.txt` that compiles the CubeMX-generated sources and links the HAL/CMSIS libraries; confirm a clean `cmake --build` produces a `.elf`
 - [x] Configure `launch.json` and `tasks.json` in VS Code for one-click flash and Cortex-Debug session
 - [x] Flash a blinky LED via `openocd` / ST-Link to confirm the full build-flash loop works
-- [ ] Wire up MPU-6050 to STM32 (SDA, SCL, VCC, GND); connect USB-to-TTL adapter
+- [x] Wire up MPU-6050 to STM32 (SDA, SCL, VCC, GND); connect USB-to-TTL adapter
 - [x] Vendor Unity into `unity/` (copy `unity.c`, `unity.h`, `unity_internals.h` from the Unity repo)
 
 ---
