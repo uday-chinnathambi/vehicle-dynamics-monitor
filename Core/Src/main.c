@@ -102,7 +102,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+        HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
+        HAL_GPIO_TogglePin(USR_LD2_GPIO_Port, USR_LD2_Pin);
+        HAL_GPIO_TogglePin(USR_LD3_GPIO_Port, USR_LD3_Pin);
+        HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -232,10 +235,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
-  /*Configure GPIO pins : User_LD1_Pin User_LD3_Pin User_LD2_Pin */
-  GPIO_InitStruct.Pin = User_LD1_Pin|User_LD3_Pin|User_LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, USR_LD1_Pin|USR_LD3_Pin|USR_LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : USR_LD1_Pin USR_LD3_Pin USR_LD2_Pin */
+  GPIO_InitStruct.Pin = USR_LD1_Pin|USR_LD3_Pin|USR_LD2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */

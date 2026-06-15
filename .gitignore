@@ -40,7 +40,6 @@ _deps/
 # Keep: .ioc file (project config), generated Src/, Inc/, Drivers/ if you
 # want them tracked. Ignore only CubeMX metadata.
 *.mxproject
-STM32CubeMX/
 
 # -----------------------------------------------------------------------------
 # VS Code

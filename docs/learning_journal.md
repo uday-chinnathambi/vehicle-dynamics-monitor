@@ -100,6 +100,11 @@ USART stands for Universal Synchronous Asynchronous Receiver Transmitter. It's a
 
 ### Inter-integrated circuit interface (I2C)
 
+### Issues faced - learining
+
+Identified that cmake\stm32cubemx\CMakeLists.txt did not contain I2C and uart related paths in drivers folder.
+IOC file configuration was wrong with GPIOS conntected to LEDs were defined as inputs instead of output.
+
 
 
 
