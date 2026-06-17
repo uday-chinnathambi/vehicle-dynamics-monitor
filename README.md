@@ -119,7 +119,14 @@ Testing can be performed without a vehicle by exploiting gravity-based sensor ti
 
 ## Limitations
 
+- No digital filtering is currently applied; sensor noise and vibration may affect readings
+- Threshold values are static and not adaptive to vehicle type or mounting position
+- Blocking delays are used for timing, limiting scalability
+- No persistent storage of detected events
+- No calibration routine for sensor offset or bias compensation
 
+These limitations are acceptable for a first implementation but would need to be addressed
+for production deployment.
 
 ---
 
