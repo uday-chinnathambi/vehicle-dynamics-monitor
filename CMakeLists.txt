@@ -1,17 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 
-#
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
-#
-# User is free to modify the file as much as necessary
-#
-
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
-
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -21,8 +13,17 @@ endif()
 # Set the project name
 set(CMAKE_PROJECT_NAME vehicle-dynamics-monitor)
 
-# Include toolchain file
-include("cmake/gcc-arm-none-eabi.cmake")
+# -------------------------------------------------------
+# CHANGE 1: Declare BUILD_TESTS option BEFORE project()
+# -------------------------------------------------------
+option(BUILD_TESTS "Build unit tests for host" OFF)
+
+# -------------------------------------------------------
+# CHANGE 2: Guard the ARM toolchain — skip it for tests
+# -------------------------------------------------------
+if(NOT BUILD_TESTS)
+    include("cmake/gcc-arm-none-eabi.cmake")
+endif()
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -34,35 +35,49 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
-# Create an executable object type
-add_executable(${CMAKE_PROJECT_NAME})
+# -------------------------------------------------------
+# CHANGE 3: Guard all firmware targets inside NOT BUILD_TESTS
+# -------------------------------------------------------
+if(NOT BUILD_TESTS)
 
-# Add STM32CubeMX generated sources
-add_subdirectory(cmake/stm32cubemx)
+    # Create an executable object type
+    add_executable(${CMAKE_PROJECT_NAME})
 
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
-)
+    # Add STM32CubeMX generated sources
+    add_subdirectory(cmake/stm32cubemx)
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-)
+    # Link directories setup
+    target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        # Add user defined library search paths
+    )
 
-# Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-)
+    # Add sources to executable
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        # Add user sources here
+    )
 
-# Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
-)
+    # Add include paths
+    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        # Add user defined include paths
+    )
 
-# Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    stm32cubemx
+    # Add project symbols (macros)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        # Add user defined symbols
+    )
 
-    # Add user defined libraries
-)
+    # Add linked libraries
+    target_link_libraries(${CMAKE_PROJECT_NAME}
+        stm32cubemx
+        # Add user defined libraries
+    )
+
+endif() # NOT BUILD_TESTS
+
+# -------------------------------------------------------
+# CHANGE 4: Add test subdirectory at the bottom
+# -------------------------------------------------------
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

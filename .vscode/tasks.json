@@ -60,5 +60,96 @@
 				"Flash: STM32CubeProgrammer"
 			],
 			"dependsOrder": "sequence",
-			"problemMatcher": []		}	]
+			"problemMatcher": []
+		},
+        // -------------------------------------------------------
+        // TEST TASKS (host GCC target)
+        // -------------------------------------------------------
+        {
+            "label": "Tests: configure",
+            "type": "shell",
+            "command": "C:/msys64/ucrt64/bin/cmake.exe",
+            "args": [
+                "-S", "${workspaceFolder}",
+                "-B", "${workspaceFolder}/build-test",
+                "-G", "Ninja",
+				"-DCMAKE_MAKE_PROGRAM=C:/msys64/ucrt64/bin/ninja.exe",
+                "-DBUILD_TESTS=ON",
+                "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/host-gcc.cmake",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Configure test build using host GCC"
+        },
+        {
+            "label": "Tests: build",
+            "type": "shell",
+            "command": "C:/msys64/ucrt64/bin/cmake.exe",
+            "args": [
+                "--build", "${workspaceFolder}/build-test",
+                "--parallel"
+            ],
+            "dependsOn": "Tests: configure",
+            "dependsOrder": "sequence",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build unit tests using host GCC"
+        },
+        {
+            "label": "Tests: run",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--test-dir", "${workspaceFolder}/build-test",
+                "--output-on-failure",
+                "-V"
+            ],
+            "dependsOn": "Tests: build",
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run all unit tests via CTest"
+        },
+        {
+            "label": "Tests: clean",
+            "type": "shell",
+            "command": "C:/msys64/ucrt64/bin/cmake.exe",
+            "args": [
+                "--build", "${workspaceFolder}/build-test",
+                "--target", "clean"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Clean test build artifacts"
+        },
+        {
+            "label": "Tests: clean rebuild & run",
+            "dependsOn": [
+                "Tests: clean",
+                "Tests: build",
+                "Tests: run"
+            ],
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Full clean rebuild and run of all unit tests"
+        }
+	]
 }
