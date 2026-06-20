@@ -36,8 +36,8 @@
 
 ## Phase 2 — TDD Environment & First Test Cases (Days 3–4)
  
-- [ ] Create `tests/` directory and `tests/CMakeLists.txt`; add a `host-gcc.cmake` toolchain file for running tests on the PC
-- [ ] Add `BUILD_TESTS` option to root `CMakeLists.txt`; verify `cmake -DBUILD_TESTS=ON` configures cleanly using host GCC
+- [x] Create `tests/` directory and `tests/CMakeLists.txt`; add a `host-gcc.cmake` toolchain file for running tests on the PC
+- [x] Add `BUILD_TESTS` option to root `CMakeLists.txt`; verify `cmake -DBUILD_TESTS=ON` configures cleanly using host GCC
 - [ ] Define `vehicle_dynamics.h` interface (`evaluate_dynamics()`, `VehicleEvent` enum, threshold constants) — headers first, no implementation yet
 - [ ] Write `tests/unit/test_vehicle_dynamics.c` with the following failing tests (Red phase):
   - `test_no_event_when_accel_within_limits`
