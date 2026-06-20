@@ -105,6 +105,28 @@ USART stands for Universal Synchronous Asynchronous Receiver Transmitter. It's a
 Identified that cmake\stm32cubemx\CMakeLists.txt did not contain I2C and uart related paths in drivers folder.
 IOC file configuration was wrong with GPIOS conntected to LEDs were defined as inputs instead of output.
 
+### CMakePresets.json
+
+Standardizes build configurations so developers, CI, and IDEs use identical flags without manual `-D` flag passing.
+
+#### Presets
+
+| Preset | Purpose |
+|---|---|
+| `default` (hidden) | Base: Ninja generator, ARM cross-compiler toolchain, `build/<presetName>` output |
+| `Debug` | Inherits default + `CMAKE_BUILD_TYPE=Debug` |
+| `Release` | Inherits default + `CMAKE_BUILD_TYPE=Release` |
+| `RelWithDebInfo` | Inherits default + `CMAKE_BUILD_TYPE=RelWithDebInfo` |
+| `MinSizeRel` | Inherits default + `CMAKE_BUILD_TYPE=MinSizeRel` |
+| `test-debug` | Host build (no ARM toolchain), output to `build-test/`, `BUILD_TESTS=ON` |
+
+### Usage
+
+```bash
+cmake --preset Debug        # configure
+cmake --build --preset Debug # build
+
+
 
 
 

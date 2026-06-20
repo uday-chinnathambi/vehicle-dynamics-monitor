@@ -18,6 +18,15 @@
             }
         },
         {
+            "name": "test-debug",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build-test",
+            "cacheVariables": {
+                "BUILD_TESTS": "ON",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
             "name": "RelWithDebInfo",
             "inherits": "default",
             "cacheVariables": {

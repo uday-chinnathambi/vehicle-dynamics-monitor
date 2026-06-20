@@ -1,10 +1,9 @@
 # cmake/host-gcc.cmake
 
-# set(CMAKE_SYSTEM_NAME Windows)
-
-set(CMAKE_C_COMPILER   "C:/msys64/ucrt64/bin/gcc.exe")
-set(CMAKE_CXX_COMPILER "C:/msys64/ucrt64/bin/g++.exe")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+set(CMAKE_C_FLAGS   "-Wall -Wextra -g3 -O0")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -g3 -O0")

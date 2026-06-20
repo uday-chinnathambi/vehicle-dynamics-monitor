@@ -39,4 +39,15 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
+      
+    - name: Configure Tests
+      run: cmake -B ${{github.workspace}}/build-test -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+
+    - name: Build Tests
+      run: cmake --build ${{github.workspace}}/build-test
+
+    - name: Run Tests
+      working-directory: ${{github.workspace}}/build-test
+      run: ctest --output-on-failure
+
 
