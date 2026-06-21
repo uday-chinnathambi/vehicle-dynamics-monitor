@@ -14,8 +14,7 @@ target_include_directories(unity PUBLIC
 function(add_unit_test test_name test_source)
     add_executable(${test_name}
         ${test_source}
-        # Add the source under test here as you build each module e.g.:
-        # ${CMAKE_SOURCE_DIR}/Core/Src/vehicle_dynamics.c
+        ${CMAKE_SOURCE_DIR}/Core/Src/vehicle_dynamics.c
     )
     target_include_directories(${test_name} PRIVATE
         ${CMAKE_SOURCE_DIR}/Core/Inc

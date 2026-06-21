@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Host (Tests)",
+            "includePath": [
+                "${workspaceFolder}/Core/Inc",
+                "${workspaceFolder}/unity"
+            ],
+            "defines": ["BUILD_TESTS"],
+            "compilerPath": "gcc",
+            "cStandard": "c11",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "ARM (Firmware)",
+            "includePath": [
+                "${workspaceFolder}/Core/Inc",
+                "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Drivers/CMSIS/Include"
+            ],
+            "defines": ["USE_HAL_DRIVER", "STM32F413xx"],
+            "compilerPath": "arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "intelliSenseMode": "linux-gcc-arm"
+        }
+    ],
+    "version": 4
+}
