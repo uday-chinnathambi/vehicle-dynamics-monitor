@@ -123,8 +123,29 @@ Standardizes build configurations so developers, CI, and IDEs use identical flag
 ### Usage
 
 ```bash
-cmake --preset Debug        # configure
+cmake --preset Debug         # configure
 cmake --build --preset Debug # build
+```
+
+---
+
+### TDD — vehicle_dynamics module (2026-06-21)
+
+#### What was done
+
+Implemented the `evaluate_dynamics()` function following the Red → Green → Refactor TDD cycle.
+
+- Created `Core/Inc/vehicle_dynamics.h` — interface first, no implementation
+- Wrote 7 failing unit tests in `tests/unit/test_vehicle_dynamics.c`
+- Fixed the build so tests could compile and link
+- Implemented the logic to pass all 7 tests
+
+
+#### Key takeaways
+
+- Always verify that the source under test is compiled into the test executable — a missing source gives a linker error, not a compiler error, which is harder to trace.
+- Use `nm <object_file> | grep " U "` to list undefined symbols and pinpoint linker failures quickly.
+- G-force values must be `float` — `uint32_t` silently truncates fractional values and cannot represent negatives.
 
 
 
