@@ -147,6 +147,33 @@ Implemented the `evaluate_dynamics()` function following the Red → Green → R
 - Use `nm <object_file> | grep " U "` to list undefined symbols and pinpoint linker failures quickly.
 - G-force values must be `float` — `uint32_t` silently truncates fractional values and cannot represent negatives.
 
+---
+
+## MPU-6050 Sensitivity — Where 8192 LSB/g comes from (2026-06-22)
+
+The MPU-6050 outputs a signed 16-bit integer per axis (`−32768` to `+32767`). That range is mapped across the configured full-scale range. For ±4g:
+
+```
+Sensitivity = 32768 counts ÷ 4g = 8192 LSB/g
+```
+
+So `1g = 8192 raw counts` and `g-force = raw_value / 8192.0f`.
+
+### All four ranges (from the datasheet)
+
+| `AFS_SEL` | Full-scale | Sensitivity |
+|---|---|---|
+| 0 | ±2g | 16384 LSB/g |
+| 1 | ±4g | **8192 LSB/g** ← project uses this |
+| 2 | ±8g | 4096 LSB/g |
+| 3 | ±16g | 2048 LSB/g |
+
+Each time the range doubles, sensitivity halves — same 16-bit output, wider physical range, coarser resolution.
+
+### Why ±4g for this project
+
+Typical vehicle events fall between 0.3g–0.8g. ±2g covers this but leaves no headroom. ±4g provides comfortable margin while keeping enough resolution to distinguish 0.4g from 0.5g (~820 count difference).
+
 
 
 

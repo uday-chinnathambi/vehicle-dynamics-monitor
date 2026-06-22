@@ -38,16 +38,16 @@
  
 - [x] Create `tests/` directory and `tests/CMakeLists.txt`; add a `host-gcc.cmake` toolchain file for running tests on the PC
 - [x] Add `BUILD_TESTS` option to root `CMakeLists.txt`; verify `cmake -DBUILD_TESTS=ON` configures cleanly using host GCC
-- [ ] Define `vehicle_dynamics.h` interface (`evaluate_dynamics()`, `VehicleEvent` enum, threshold constants) — headers first, no implementation yet
-- [ ] Write `tests/unit/test_vehicle_dynamics.c` with the following failing tests (Red phase):
+- [x] Define `vehicle_dynamics.h` interface (`evaluate_dynamics()`, `VehicleEvent` enum, threshold constants) — headers first, no implementation yet
+- [x] Write `tests/unit/test_vehicle_dynamics.c` with the following failing tests (Red phase):
   - `test_no_event_when_accel_within_limits`
   - `test_harsh_braking_detected`
   - `test_rapid_acceleration_detected`
   - `test_aggressive_cornering_left`
   - `test_event_at_exact_threshold`
-- [ ] Create stub `vehicle_dynamics.c` returning `EVENT_NONE` — confirm all tests compile and fail
-- [ ] Implement `evaluate_dynamics()` logic to pass all tests (Green phase); refactor for clarity (Refactor phase)
-- [ ] Write `tests/unit/test_mpu6050.c` with conversion tests:
+- [x] Create stub `vehicle_dynamics.c` returning `EVENT_NONE` — confirm all tests compile and fail
+- [x] Implement `evaluate_dynamics()` logic to pass all tests (Green phase); refactor for clarity (Refactor phase)
+- [x] Write `tests/unit/test_mpu6050.c` with conversion tests:
   - `test_raw_bytes_reconstruct_to_signed_int`
   - `test_raw_to_gforce_at_4g_range`
   - `test_negative_raw_value_gives_negative_gforce`

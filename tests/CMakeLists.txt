@@ -15,6 +15,7 @@ function(add_unit_test test_name test_source)
     add_executable(${test_name}
         ${test_source}
         ${CMAKE_SOURCE_DIR}/Core/Src/vehicle_dynamics.c
+        ${CMAKE_SOURCE_DIR}/Core/Src/mpu6050.c
     )
     target_include_directories(${test_name} PRIVATE
         ${CMAKE_SOURCE_DIR}/Core/Inc
@@ -29,4 +30,7 @@ endfunction()
 # Register test executables
 add_unit_test(test_vehicle_dynamics
     ${CMAKE_CURRENT_SOURCE_DIR}/unit/test_vehicle_dynamics.c
+)
+add_unit_test(test_mpu6050
+    ${CMAKE_CURRENT_SOURCE_DIR}/unit/test_mpu6050.c
 )
