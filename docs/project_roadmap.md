@@ -51,7 +51,7 @@
   - `test_raw_bytes_reconstruct_to_signed_int`
   - `test_raw_to_gforce_at_4g_range`
   - `test_negative_raw_value_gives_negative_gforce`
-- [ ] Implement `reconstruct_raw_value()` and `raw_to_gforce()` to pass conversion tests
+- [x] Implement `reconstruct_raw_value()` and `raw_to_gforce()` to pass conversion tests
 ---
  
 ## Phase 3 — Sensor Bring-Up & I2C Communication (Days 5–7)
