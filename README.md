@@ -103,7 +103,7 @@ The firmware operates continuously, similar to a background monitoring task with
    - Connect a USB-to-TTL adapter to the configured UART pins
 
 2. **Firmware Deployment**
-   - Open the project in STM32CubeIDE
+   - Open the project in VS Code
    - Verify CubeMX configuration for the target board
    - Build and flash the firmware to the STM32
 

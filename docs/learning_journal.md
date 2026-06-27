@@ -56,8 +56,8 @@ So in short: CMake owns the logic, Ninja owns the speed. CMake writes the recipe
 | **Semihosting** | Supported | Supported |
 | **ITM / SWO tracing** | Supported | Supported |
 | **RTOS thread awareness** | Supported (FreeRTOS, ThreadX…) | Limited |
-| **Platform** | Linux, macOS, Windows | Windows primary; Linux/macOS via STM32CubeIDE |
-| **Standalone install** | Yes | Bundled with STM32CubeIDE or CubeProgrammer |
+| **Platform** | Linux, macOS, Windows | Windows primary; limited on Linux/macOS |
+| **Standalone install** | Yes | Bundled with STM32CubeProgrammer |
 
 ---
 
@@ -66,7 +66,7 @@ So in short: CMake owns the logic, Ninja owns the speed. CMake writes the recipe
 **OpenOCD** is the better fit for a VS Code + CMake workflow — it is platform-independent,
 integrates cleanly with Cortex-Debug, and is not tied to ST's tooling.
 
-**ST-Link GDB Server** is worth knowing about if you ever work inside STM32CubeIDE or need
+**ST-Link GDB Server** is worth knowing about if you use STM32CubeProgrammer or need
 faster flash speeds on larger binaries, but for a firmware component project OpenOCD covers
 everything you need.
 
