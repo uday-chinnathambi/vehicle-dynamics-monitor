@@ -2,6 +2,9 @@
 #define MPU6050_H
 
 #include <stdint.h>
+#ifndef BUILD_TESTS
+#include "stm32f4xx_hal.h"
+#endif
 
 /* Sensitivity scale factor: LSB counts per 1g at ±4g full-scale range (MPU-6050 datasheet) */
 #define MPU6050_SENSITIVITY_4G  (8192U)
@@ -18,7 +21,6 @@
 #define MPU6050_WHO_AM_I_VALUE  (0x68U)
 
 #ifndef BUILD_TESTS
-#include "stm32f4xx_hal.h"
 
 HAL_StatusTypeDef mpu6050_read_register(I2C_HandleTypeDef *hi2c,
                                          uint8_t reg, uint8_t *value);

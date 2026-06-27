@@ -21,6 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "mpu6050.h"
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -94,6 +96,29 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_StatusTypeDef mpu_status;
+
+  mpu_status = mpu6050_wake(&hi2c1);
+  if (mpu_status != HAL_OK)
+  {
+      uint32_t err = HAL_I2C_GetError(&hi2c1);
+      char msg[48];
+      // char *msg = "MPU6050: wake FAILED\r\n";
+      snprintf(msg, sizeof(msg), "MPU6050: wake FAILED err=0x%02lX\r\n", err);
+      HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+  }
+
+  mpu_status = mpu6050_verify_identity(&hi2c1);
+  if (mpu_status == HAL_OK)
+  {
+      char *msg = "MPU6050: WHO_AM_I OK (0x68)\r\n";
+      HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+  }
+  else
+  {
+      char *msg = "MPU6050: WHO_AM_I FAILED\r\n";
+      HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+  }
 
   /* USER CODE END 2 */
 

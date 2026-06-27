@@ -78,6 +78,7 @@ endif() # NOT BUILD_TESTS
 # CHANGE 4: Add test subdirectory at the bottom
 # -------------------------------------------------------
 if(BUILD_TESTS)
+    add_compile_definitions(BUILD_TESTS)  # exposes #ifndef BUILD_TESTS guards in headers
     enable_testing()
     add_subdirectory(tests)
 endif()
