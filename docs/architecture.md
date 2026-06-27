@@ -1,12 +1,52 @@
 # Vehicle Dynamics Monitor — Architecture
 
+## Hardware Signal Flow
+
+```mermaid
+graph LR
+    subgraph PC["Developer PC"]
+        VSCODE["VS Code\nCortex-Debug extension"]
+        TERM["Serial Terminal\n115200 baud"]
+    end
+
+    subgraph NUCLEO["Nucleo-F413ZH Board"]
+        STLINK["ST-Link / V2-1\nOn-board debugger"]
+
+        subgraph MCU["STM32F413ZH MCU"]
+            USART["USART3\nTX → PD8\nRX → PD9"]
+            I2C["I2C1  100 kHz\nSCL → PB8\nSDA → PB9"]
+            LEDS["GPIO Output\nLD1 green → PB0"]
+            SWD["SWD Interface\nSWDIO  → PA13\nSWDCLK → PA14"]
+        end
+
+        STLINK -->|"Virtual COM\ninternal routing"| USART
+        USART -->|"Virtual COM\ninternal routing"| STLINK
+        STLINK <-->|"SWD\nflash + debug"| SWD
+    end
+
+    subgraph MPU["MPU-6050 Module"]
+        SENSOR["MEMS Accelerometer\n±4g   100 Hz"]
+        PWR["VCC  → 3.3V\nGND  → GND\nAD0  → GND\n addr 0x68"]
+    end
+
+    VSCODE <-->|"USB cable"| STLINK
+    TERM   <-->|"USB cable\nVirtual COM port"| STLINK
+    I2C    <-->|"SCL PB8\nSDA PB9"| SENSOR
+```
+
+### Physical Connections
+
+![Physical connections — Nucleo-F413ZH wired to MPU-6050 via I2C on breadboard](images/physical_connections.jpg)
+
+---
+
 ## System Architecture
 
 ```mermaid
 graph TD
     subgraph Hardware["Hardware Layer"]
         MPU["MPU-6050\n(I2C Sensor)"]
-        STM["STM32 MCU\n(Nucleo-F446ZH)"]
+        STM["STM32 MCU\n(Nucleo-F413ZH)"]
         UART_HW["USB-TTL / UART"]
         MPU -->|SDA/SCL I2C| STM
         STM -->|TX/RX| UART_HW

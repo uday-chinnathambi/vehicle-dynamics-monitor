@@ -96,6 +96,16 @@ The firmware operates continuously, similar to a background monitoring task with
 
 ---
 
+## Documentation
+
+| Document | Description |
+|---|---|
+| [Architecture](docs/architecture.md) | Hardware signal flow with GPIO pin details, system architecture diagrams, data flow, layer boundaries, and CMake build configurations |
+| [Project Roadmap](docs/project_roadmap.md) | 6-phase development plan, folder structure, and TDD approach |
+| [Learning Journal](docs/learning_journal.md) | Development notes, design decisions, issues encountered and how they were resolved |
+
+---
+
 ## How to Run It
 
 1. **Hardware Setup**
