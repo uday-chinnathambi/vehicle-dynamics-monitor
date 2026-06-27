@@ -174,6 +174,135 @@ Each time the range doubles, sensitivity halves — same 16-bit output, wider ph
 
 Typical vehicle events fall between 0.3g–0.8g. ±2g covers this but leaves no headroom. ±4g provides comfortable margin while keeping enough resolution to distinguish 0.4g from 0.5g (~820 count difference).
 
+---
+
+## Phase 3 — I2C Bring-Up & Debugging (2026-06-27)
+
+### What was done
+
+- Added HAL I2C helper functions to `mpu6050.h/c`: `mpu6050_read_register`, `mpu6050_write_register`, `mpu6050_wake`, `mpu6050_verify_identity`
+- Called wake and identity check from `main.c` with UART output to confirm result
+- Debugged "wake FAILED / WHO_AM_I FAILED" on serial terminal
+- Fixed a CMake/preprocessor gap that broke the host test build
+
+---
+
+### Issues encountered and how they were resolved
+
+#### 1. HAL MSP — UART works without configuring GPIOD in `MX_GPIO_Init`
+
+UART and I2C GPIO pins are NOT configured in `MX_GPIO_Init`. CubeMX places peripheral-owned GPIO setup inside `HAL_UART_MspInit` / `HAL_I2C_MspInit` callbacks in `stm32f4xx_hal_msp.c`. These are called automatically from inside `HAL_UART_Init` / `HAL_I2C_Init`. `MX_GPIO_Init` is only for general-purpose pins (LEDs, buttons).
+
+---
+
+#### 2. MPU-6050 reporting "wake FAILED / WHO_AM_I FAILED"
+
+Two root causes identified:
+
+**Hardware — AD0 pin not connected to GND**
+The MPU-6050 I2C address is determined by the AD0 pin:
+- AD0 = GND → address `0x68` (what the code uses)
+- AD0 = floating or HIGH → address `0x69` → every transaction NACKs
+
+Fix: wire AD0 pin to GND on the MPU-6050 module.
+
+**Hardware — Pull-up resistors on SDA/SCL**
+I2C is open-drain. The MCU can only pull lines LOW; external resistors pull them HIGH. CubeMX sets `GPIO_NOPULL` (correct when external pull-ups exist). Verify the GY-521 module has built-in 4.7kΩ pull-ups or add them externally.
+
+**Diagnostic tip:** use `HAL_I2C_GetError()` to distinguish failure modes:
+| Error code | Meaning |
+|---|---|
+| `0x04` (AF) | NACK — wrong address or device not powered |
+| `0x01` (BERR) | Bus error — wiring fault |
+| `0x20` (TIMEOUT) | Lines stuck LOW — short to GND |
+
+---
+
+#### 3. `#ifndef BUILD_TESTS` guard not firing in host test build
+
+**Issue:** `mpu6050.h` uses `#ifndef BUILD_TESTS` to skip the `stm32f4xx_hal.h` include during host builds. The test build failed with `fatal error: stm32f4xx_hal.h: No such file or directory`.
+
+**Root cause:** `BUILD_TESTS=ON` in `CMakePresets.json` is a CMake cache variable — it controls CMake logic but is never automatically forwarded to the C compiler as a preprocessor macro. So `#ifndef BUILD_TESTS` was always true.
+
+**Fix:** Added to `CMakeLists.txt`:
+```cmake
+if(BUILD_TESTS)
+    add_compile_definitions(BUILD_TESTS)  # passes -DBUILD_TESTS to the compiler
+    ...
+endif()
+```
+
+`add_compile_definitions` bridges the CMake variable to a compiler flag (`-DBUILD_TESTS`), making the preprocessor guard functional.
+
+**Key takeaway:** CMake variables and C preprocessor macros are two separate namespaces. A CMake `option()` or cache variable is never visible to `#ifdef` unless explicitly forwarded via `add_compile_definitions` or `target_compile_definitions`.
+
+---
+
+## Phase 3 — Sensor Configuration & Raw Burst Read (2026-06-27)
+
+### Decisions made
+
+#### Accelerometer full-scale range: ±4g
+
+Written to `ACCEL_CONFIG` register (`0x1C`), bits [4:3] = `01` → value `0x08`.
+
+| AFS_SEL | Range | Sensitivity |
+|---|---|---|
+| 00 | ±2g | 16384 LSB/g |
+| **01** | **±4g** | **8192 LSB/g** ← chosen |
+| 10 | ±8g | 4096 LSB/g |
+| 11 | ±16g | 2048 LSB/g |
+
+**Why ±4g:** Vehicle events (braking, cornering) fall in the 0.3–0.8g range. ±2g gives no headroom; ±4g covers edge cases while keeping enough resolution (~820 counts difference between 0.4g and 0.5g).
+
+---
+
+#### Sample rate: 100 Hz via SMPLRT_DIV
+
+The MPU-6050 does not expose sample rate directly. Instead, you supply a divider into `SMPLRT_DIV` register (`0x19`):
+
+```
+Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
+```
+
+With DLPF disabled (default), gyroscope output rate = **8000 Hz**.
+
+```
+100 Hz = 8000 / (1 + 79)  →  SMPLRT_DIV = 79
+```
+
+`MPU6050_SMPLRT_100HZ (79U)` stores the divider, not 100.
+
+**Why 100 Hz:** Vehicle events last 200–500ms. At 100 Hz, a 200ms event yields 20 samples — enough to detect the onset reliably. Faster adds noise without benefit; slower risks missing sharp peaks.
+
+**Note:** `SMPLRT_DIV` is 8-bit, so minimum achievable rate is 8000/256 ≈ 31 Hz.
+
+---
+
+#### Raw burst read: 6 bytes from ACCEL_XOUT_H (0x3B)
+
+`HAL_I2C_Mem_Read` with length 6 starting at `0x3B`. The MPU-6050 auto-increments through:
+
+```
+0x3B ACCEL_XOUT_H │ 0x3C ACCEL_XOUT_L
+0x3D ACCEL_YOUT_H │ 0x3E ACCEL_YOUT_L
+0x3F ACCEL_ZOUT_H │ 0x40 ACCEL_ZOUT_L
+```
+
+One I2C transaction reads all three axes atomically.
+
+---
+
+#### Sensor noise is normal — data changing at rest is expected
+
+On first run, raw Z readings varied (~0x21xx) while X and Y stayed near 0. This is correct:
+
+- **Z ≈ 0x2100 (8448 counts) ≈ 1.03g** — gravity on the vertical axis ✓
+- **X, Y ≈ 0** — sensor is flat ✓
+- **Reading-to-reading variation (~±50 counts)** — MEMS sensor noise, not a bug
+
+The MPU-6050 datasheet specifies ~400 μg/√Hz noise density. At 100 Hz that is ~4000 μg (~32 counts) of inherent noise. Phase 4 will address this with a moving average or IIR low-pass filter before feeding values into `evaluate_dynamics()`.
+
 
 
 

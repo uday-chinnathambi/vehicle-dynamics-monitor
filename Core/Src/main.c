@@ -108,6 +108,8 @@ int main(void)
       HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
   }
 
+  HAL_Delay(100U); /* allow sensor to stabilise after wake */
+
   mpu_status = mpu6050_verify_identity(&hi2c1);
   if (mpu_status == HAL_OK)
   {
@@ -120,6 +122,9 @@ int main(void)
       HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
   }
 
+  mpu6050_configure_accel_range(&hi2c1);   /* ACCEL_CONFIG: ±4g */
+  mpu6050_configure_sample_rate(&hi2c1, MPU6050_SMPLRT_100HZ); /* 100 Hz */
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,10 +132,23 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-        HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
-        HAL_GPIO_TogglePin(USR_LD2_GPIO_Port, USR_LD2_Pin);
-        HAL_GPIO_TogglePin(USR_LD3_GPIO_Port, USR_LD3_Pin);
-        HAL_Delay(1000);
+      uint8_t raw[MPU6050_ACCEL_RAW_BYTES] = {0U};
+      char tx_buf[MPU6050_UART_TX_BUF_SIZE];
+
+      mpu_status = mpu6050_read_accel_raw(&hi2c1, raw, sizeof(raw));
+      if (mpu_status == HAL_OK)
+      {
+          snprintf(tx_buf, sizeof(tx_buf),
+                   "RAW X:%02X%02X Y:%02X%02X Z:%02X%02X\r\n",
+                   raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+      }
+      else
+      {
+          snprintf(tx_buf, sizeof(tx_buf), "RAW READ FAILED\r\n");
+      }
+      HAL_UART_Transmit(&huart3, (uint8_t *)tx_buf, strlen(tx_buf), HAL_MAX_DELAY);
+      HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
+      HAL_Delay(500U);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

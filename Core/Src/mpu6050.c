@@ -49,5 +49,30 @@ HAL_StatusTypeDef mpu6050_verify_identity(I2C_HandleTypeDef *hi2c)
     return status;
 }
 
+/* Sets ACCEL_CONFIG register: AFS_SEL bits [4:3] = 01 → ±4g range */
+HAL_StatusTypeDef mpu6050_configure_accel_range(I2C_HandleTypeDef *hi2c)
+{
+    return mpu6050_write_register(hi2c, MPU6050_REG_ACCEL_CONFIG, MPU6050_ACCEL_FS_4G);
+}
+
+/* Sets SMPLRT_DIV register: sample rate = 8000 / (1 + divider) Hz */
+HAL_StatusTypeDef mpu6050_configure_sample_rate(I2C_HandleTypeDef *hi2c, uint8_t divider)
+{
+    return mpu6050_write_register(hi2c, MPU6050_REG_SMPLRT_DIV, divider);
+}
+
+/* Burst-reads 6 raw accelerometer bytes starting at ACCEL_XOUT_H (0x3B) */
+HAL_StatusTypeDef mpu6050_read_accel_raw(I2C_HandleTypeDef *hi2c,
+                                          uint8_t *buf, uint16_t buf_size)
+{
+    if (buf_size < MPU6050_ACCEL_RAW_BYTES)
+    {
+        return HAL_ERROR;
+    }
+    return HAL_I2C_Mem_Read(hi2c, MPU6050_I2C_ADDR,
+                            MPU6050_REG_ACCEL_XOUT_H, I2C_MEMADD_SIZE_8BIT,
+                            buf, MPU6050_ACCEL_RAW_BYTES, HAL_MAX_DELAY);
+}
+
 #endif /* BUILD_TESTS */
 

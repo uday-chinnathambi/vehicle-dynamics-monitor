@@ -56,11 +56,11 @@
  
 ## Phase 3 — Sensor Bring-Up & I2C Communication (Days 5–7)
  
-- [ ] Write HAL I2C read/write helper functions for register-level access
-- [ ] Wake MPU-6050 from sleep via `PWR_MGMT_1` register write
-- [ ] Verify device identity by reading `WHO_AM_I` register (expect `0x68`)
-- [ ] Configure sensor range (e.g. ±4g) and sample rate via `ACCEL_CONFIG`
-- [ ] Read raw 6-byte acceleration burst; print raw hex over UART to confirm comms
+- [x] Write HAL I2C read/write helper functions for register-level access
+- [x] Wake MPU-6050 from sleep via `PWR_MGMT_1` register write
+- [x] Verify device identity by reading `WHO_AM_I` register (expect `0x68`)
+- [x] Configure sensor range (e.g. ±4g) and sample rate via `ACCEL_CONFIG`
+- [x] Read raw 6-byte acceleration burst; print raw hex over UART to confirm comms
 ---
  
 ## Phase 4 — Data Acquisition & Signal Processing (Days 8–10)

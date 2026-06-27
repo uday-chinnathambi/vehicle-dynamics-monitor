@@ -13,12 +13,26 @@
 #define MPU6050_I2C_ADDR        (0x68U << 1U)
 
 /* Register addresses */
-#define MPU6050_REG_WHO_AM_I    (0x75U)
-#define MPU6050_REG_PWR_MGMT_1  (0x6BU)
-// #define MPU6050_REG_ACCEL_XOUT_H (0x3BU)
+#define MPU6050_REG_WHO_AM_I     (0x75U)
+#define MPU6050_REG_PWR_MGMT_1   (0x6BU)
+#define MPU6050_REG_SMPLRT_DIV   (0x19U)
+#define MPU6050_REG_ACCEL_CONFIG (0x1CU)
+#define MPU6050_REG_ACCEL_XOUT_H (0x3BU)
 
 /* Expected WHO_AM_I response */
-#define MPU6050_WHO_AM_I_VALUE  (0x68U)
+#define MPU6050_WHO_AM_I_VALUE   (0x68U)
+
+/* ACCEL_CONFIG register — bits [4:3] = AFS_SEL: 01 → ±4g */
+#define MPU6050_ACCEL_FS_4G      (0x08U)
+
+/* SMPLRT_DIV for 100 Hz: 8000 / (1 + 79) = 100 Hz (DLPF disabled) */
+#define MPU6050_SMPLRT_100HZ     (79U)
+
+/* Number of bytes in one accelerometer burst (X, Y, Z — 2 bytes each) */
+#define MPU6050_ACCEL_RAW_BYTES  (6U)
+
+/* UART transmit buffer size for one raw hex line: "RAW X:XXYY Y:XXYY Z:XXYY\r\n" + null */
+#define MPU6050_UART_TX_BUF_SIZE (48U)
 
 #ifndef BUILD_TESTS
 
@@ -31,6 +45,13 @@ HAL_StatusTypeDef mpu6050_write_register(I2C_HandleTypeDef *hi2c,
 HAL_StatusTypeDef mpu6050_wake(I2C_HandleTypeDef *hi2c);
 
 HAL_StatusTypeDef mpu6050_verify_identity(I2C_HandleTypeDef *hi2c);
+
+HAL_StatusTypeDef mpu6050_configure_accel_range(I2C_HandleTypeDef *hi2c);
+
+HAL_StatusTypeDef mpu6050_configure_sample_rate(I2C_HandleTypeDef *hi2c, uint8_t divider);
+
+HAL_StatusTypeDef mpu6050_read_accel_raw(I2C_HandleTypeDef *hi2c,
+                                          uint8_t *buf, uint16_t buf_size);
 
 #endif /* BUILD_TESTS */
 
