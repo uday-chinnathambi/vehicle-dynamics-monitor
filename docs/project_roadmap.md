@@ -65,11 +65,11 @@
  
 ## Phase 4 — Data Acquisition & Signal Processing (Days 8–10)
  
-- [ ] Reconstruct signed 16-bit values from two raw bytes per axis
-- [ ] Convert raw counts to g-force using sensitivity scale factor (e.g. 8192 LSB/g for ±4g)
-- [ ] Implement fixed-interval polling loop using `HAL_GetTick()` (non-blocking)
-- [ ] Output formatted acceleration values (X, Y, Z) over UART in human-readable form
-- [ ] Validate readings by tilting sensor; confirm gravity appears on the correct axis (~1.0 g)
+- [x] Reconstruct signed 16-bit values from two raw bytes per axis
+- [x] Convert raw counts to g-force using sensitivity scale factor (e.g. 8192 LSB/g for ±4g)
+- [x] Implement fixed-interval polling loop using `HAL_GetTick()` (non-blocking)
+- [x] Output formatted acceleration values (X, Y, Z) over UART in human-readable form
+- [x] Validate readings by tilting sensor; confirm gravity appears on the correct axis (~1.0 g)
 ---
  
 ## Phase 5 — Application Logic: TDD Event Detection (Days 11–12)

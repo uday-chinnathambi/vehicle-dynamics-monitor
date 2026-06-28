@@ -97,6 +97,7 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_StatusTypeDef mpu_status;
+  uint32_t last_mpu_read = 0;
 
   mpu_status = mpu6050_wake(&hi2c1);
   if (mpu_status != HAL_OK)
@@ -125,6 +126,7 @@ int main(void)
   mpu6050_configure_accel_range(&hi2c1);   /* ACCEL_CONFIG: ±4g */
   mpu6050_configure_sample_rate(&hi2c1, MPU6050_SMPLRT_100HZ); /* 100 Hz */
 
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -135,20 +137,27 @@ int main(void)
       uint8_t raw[MPU6050_ACCEL_RAW_BYTES] = {0U};
       char tx_buf[MPU6050_UART_TX_BUF_SIZE];
 
-      mpu_status = mpu6050_read_accel_raw(&hi2c1, raw, sizeof(raw));
-      if (mpu_status == HAL_OK)
+      if((HAL_GetTick() - last_mpu_read) >= 1000U)
       {
-          snprintf(tx_buf, sizeof(tx_buf),
-                   "RAW X:%02X%02X Y:%02X%02X Z:%02X%02X\r\n",
-                   raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+        mpu_status = mpu6050_read_accel_raw(&hi2c1, raw, sizeof(raw));
+        if (mpu_status == HAL_OK)
+        {
+            float x_g = raw_to_gforce(reconstruct_raw_value(raw[0], raw[1]), MPU6050_SENSITIVITY_4G);
+            float y_g = raw_to_gforce(reconstruct_raw_value(raw[2], raw[3]), MPU6050_SENSITIVITY_4G);
+            float z_g = raw_to_gforce(reconstruct_raw_value(raw[4], raw[5]), MPU6050_SENSITIVITY_4G);
+            snprintf(tx_buf, sizeof(tx_buf),
+                    "X:%+.3fg  Y:%+.3fg  Z:%+.3fg\r\n",
+                    x_g, y_g, z_g);
+        }
+        else
+        {
+            snprintf(tx_buf, sizeof(tx_buf), "ACCEL READ FAILED\r\n");
+        }
+
+        HAL_UART_Transmit(&huart3, (uint8_t *)tx_buf, strlen(tx_buf), HAL_MAX_DELAY);
+        HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
+        last_mpu_read = HAL_GetTick();
       }
-      else
-      {
-          snprintf(tx_buf, sizeof(tx_buf), "RAW READ FAILED\r\n");
-      }
-      HAL_UART_Transmit(&huart3, (uint8_t *)tx_buf, strlen(tx_buf), HAL_MAX_DELAY);
-      HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
-      HAL_Delay(500U);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

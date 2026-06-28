@@ -31,7 +31,7 @@
 /* Number of bytes in one accelerometer burst (X, Y, Z — 2 bytes each) */
 #define MPU6050_ACCEL_RAW_BYTES  (6U)
 
-/* UART transmit buffer size for one raw hex line: "RAW X:XXYY Y:XXYY Z:XXYY\r\n" + null */
+/* UART transmit buffer size: "X:+1.234g  Y:+1.234g  Z:+1.234g\r\n" + null (~36 bytes) */
 #define MPU6050_UART_TX_BUF_SIZE (48U)
 
 #ifndef BUILD_TESTS

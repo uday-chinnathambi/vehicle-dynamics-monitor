@@ -303,8 +303,68 @@ On first run, raw Z readings varied (~0x21xx) while X and Y stayed near 0. This 
 
 The MPU-6050 datasheet specifies ~400 μg/√Hz noise density. At 100 Hz that is ~4000 μg (~32 counts) of inherent noise. Phase 4 will address this with a moving average or IIR low-pass filter before feeding values into `evaluate_dynamics()`.
 
+---
 
+## Phase 4 — Data Acquisition & Signal Processing (2026-06-28)
 
+### What was done
+
+- Extended the main loop to compute g-force for all three axes (X, Y, Z), not just X
+- Updated UART output to a human-readable format: `X:+0.003g  Y:-0.001g  Z:+1.002g`
+- Fixed two bugs that prevented g-force from appearing on the terminal
+
+---
+
+### Bugs fixed
+
+#### 1. `&x_axis_gforce` passed to `snprintf` instead of `x_axis_gforce`
+
+`%f` expects a `double` passed **by value**. Passing the address of the float (`&x_axis_gforce`) causes `snprintf` to interpret the pointer bits as a floating-point number — the result is either garbage or an empty field. The fix is removing the `&`.
+
+**Key takeaway:** `%f`/`%g`/`%e` are value specifiers. Never pass a pointer to a float to `snprintf` — unlike `scanf`, `printf`-family functions do not take addresses.
+
+---
+
+#### 2. `snprintf %f` producing blank output with `--specs=nano.specs`
+
+Even after fixing the pointer bug, the g-force field remained blank. Root cause: the project links against **newlib-nano** (`--specs=nano.specs`), a size-optimised C library for embedded targets. Newlib-nano strips floating-point support out of `printf`/`snprintf` by default to save ~8 KB of flash. The `%f` specifier becomes a no-op.
+
+**Fix:** add `-u _printf_float` to the linker flags in `cmake/gcc-arm-none-eabi.cmake`:
+
+```cmake
+set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} --specs=nano.specs -u _printf_float")
+```
+
+`-u _printf_float` is an *undefined symbol reference* — it forces the linker to pull in the full float-capable `printf` implementation from the library, overriding the stripped version.
+
+**Key takeaway:** Newlib-nano is the default in most STM32 CMake templates. Any time `%f` prints blank or nothing, suspect the nano float stub. The fix is always `-u _printf_float` on the linker line.
+
+---
+
+### `%+.3f` format specifier explained
+
+The UART format string uses `%+.3fg`:
+
+| Part | Meaning |
+|---|---|
+| `%` | Start of format specifier |
+| `+` | Always print the sign (`+` for positive, `-` for negative) |
+| `.3` | 3 decimal places |
+| `f` | Floating-point value |
+| `g` | Literal character appended after the number |
+
+The `+` flag does **not** hardcode a positive value — negative readings print `-` automatically. Forcing the sign to always appear makes it immediately obvious which direction an axis is accelerating, which matters when values are small and close to zero (e.g., `+0.003g` vs `-0.003g`).
+
+---
+
+### Gravity validation
+
+At rest with the sensor flat:
+
+- **Z ≈ +1.000g** — gravity acting on the vertical axis ✓
+- **X, Y ≈ 0.000g** — no lateral or longitudinal acceleration ✓
+
+Tilting the board 90° so X faces down shifts the reading to **X ≈ +1.000g, Z ≈ 0.000g**, confirming axis orientation and the g-force conversion are correct.
 
 
 
