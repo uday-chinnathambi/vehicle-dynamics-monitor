@@ -1,5 +1,21 @@
 #include "vehicle_dynamics.h"
 
+VehicleEvent debounce_event(DebounceState *state, VehicleEvent raw_event, uint8_t hold_required)
+{
+    if (raw_event != state->candidate)
+    {
+        state->candidate = raw_event;
+        state->count = 0U;
+    }
+
+    if (state->count < hold_required)
+    {
+        state->count++;
+    }
+
+    return (state->count >= hold_required) ? state->candidate : EVENT_NONE;
+}
+
 VehicleEvent evaluate_dynamics(float longitudinal_g, float lateral_g, float vertical_g)
 {
     VehicleEvent result = EVENT_NONE;
