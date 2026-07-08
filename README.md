@@ -108,22 +108,85 @@ The firmware operates continuously, similar to a background monitoring task with
 
 ## How to Run It
 
-1. **Hardware Setup**
-   - Connect the MPU-6050 sensor to the STM32 via I2C (SDA, SCL, VCC, GND)
-   - Connect a USB-to-TTL adapter to the configured UART pins
+### Hardware Wiring
 
-2. **Firmware Deployment**
-   - Open the project in VS Code
-   - Verify CubeMX configuration for the target board
-   - Build and flash the firmware to the STM32
+Connect the MPU-6050 module to the Nucleo-F413ZH board:
 
-3. **Validation**
-   - Open a serial terminal at 115200 baud
-   - Reset the device to start execution
-   - Tilt or move the sensor to simulate vehicle motion
-   - Observe diagnostic messages indicating detected events
+| MPU-6050 Pin | STM32 Signal | Nucleo-F413ZH Pin |
+|---|---|---|
+| VCC | 3.3V | CN8 pin 7 |
+| GND | GND | CN8 pin 11 |
+| SDA | I2C1 SDA | PB9 (CN7 pin 4) |
+| SCL | I2C1 SCL | PB8 (CN7 pin 2) |
+| AD0 | GND | Tie to GND → I2C address 0x68 |
 
-Testing can be performed without a vehicle by exploiting gravity-based sensor tilting.
+UART output is routed through the on-board ST-Link virtual COM port — no separate USB-to-TTL adapter is required. Connect the board to the PC with a single USB cable.
+
+---
+
+### Build — Firmware (ARM target)
+
+```bash
+cmake -B build/Debug --preset Debug
+cmake --build build/Debug
+```
+
+Output: `build/Debug/vehicle-dynamics-monitor.elf`
+
+---
+
+### Build — Unit Tests (host GCC)
+
+```bash
+cmake -B build-test -DBUILD_TESTS=ON
+cmake --build build-test
+ctest --test-dir build-test --output-on-failure
+```
+
+All tests must pass before flashing to hardware.
+
+---
+
+### Flash
+
+Using STM32CubeProgrammer CLI:
+
+```bash
+STM32_Programmer_CLI -c port=SWD -w build/Debug/vehicle-dynamics-monitor.elf -rst
+```
+
+Or open the STM32CubeProgrammer GUI, connect via SWD, browse to `build/Debug/vehicle-dynamics-monitor.elf`, and click **Download**.
+
+---
+
+### UART Output
+
+Open the Nucleo's virtual COM port at **115200 baud, 8N1** (appears as `COMx` on Windows, `/dev/ttyACMx` on Linux).
+
+Normal output (1 Hz):
+```
+X:+0.012g  Y:-0.008g  Z:+0.998g
+```
+
+When a threshold is sustained for 3 consecutive samples:
+```
+EVENT: HARSH_BRAKING
+```
+
+---
+
+### Test Procedure (without a vehicle)
+
+Tilt the sensor to simulate vehicle motion using gravity:
+
+| Tilt | Simulates | Expected output |
+|---|---|---|
+| Nose down — X ≥ +0.5g | Rapid acceleration | `EVENT: RAPID_ACCELERATION` |
+| Nose up — X ≤ −0.5g | Harsh braking | `EVENT: HARSH_BRAKING` |
+| Roll left — Y ≥ +0.4g | Left corner | `EVENT: CORNERING_LEFT` |
+| Roll right — Y ≤ −0.4g | Right corner | `EVENT: CORNERING_RIGHT` |
+
+Hold each tilt for at least 3 seconds (debounce requires 3 consecutive samples at 1 Hz) before the event fires.
 
 ---
 

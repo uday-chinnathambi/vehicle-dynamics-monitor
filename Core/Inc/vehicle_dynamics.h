@@ -1,3 +1,9 @@
+/**
+ * @file  vehicle_dynamics.h
+ * @brief Application logic layer — HAL-free driving event detection and debounce.
+ *        All inputs are physical units (g-force floats); all outputs are VehicleEvent enums.
+ *        Contains zero HAL calls — fully testable on the host without mocking.
+ */
 #ifndef VEHICLE_DYNAMICS_H
 #define VEHICLE_DYNAMICS_H
 

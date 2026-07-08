@@ -1,3 +1,7 @@
+/**
+ * @file  mpu6050.c
+ * @brief Sensor HAL layer — MPU-6050 register access over I2C and axis data conversion.
+ */
 #include "mpu6050.h"
 
 int16_t reconstruct_raw_value(uint8_t high_byte, uint8_t low_byte)

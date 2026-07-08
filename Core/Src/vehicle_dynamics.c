@@ -1,3 +1,8 @@
+/**
+ * @file  vehicle_dynamics.c
+ * @brief Application logic layer — implements evaluate_dynamics() and debounce_event().
+ *        No HAL calls; all logic operates on floats and enums only.
+ */
 #include "vehicle_dynamics.h"
 
 VehicleEvent debounce_event(DebounceState *state, VehicleEvent raw_event, uint8_t hold_required)

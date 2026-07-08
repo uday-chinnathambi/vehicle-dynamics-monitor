@@ -1,3 +1,9 @@
+/**
+ * @file  mpu6050.h
+ * @brief Sensor HAL layer — MPU-6050 I2C driver interface and raw-to-float conversion.
+ *        I2C functions require STM32 HAL and are omitted when BUILD_TESTS is defined.
+ *        reconstruct_raw_value() and raw_to_gforce() are HAL-free and host-testable.
+ */
 #ifndef MPU6050_H
 #define MPU6050_H
 

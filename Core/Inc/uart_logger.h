@@ -1,3 +1,8 @@
+/**
+ * @file  uart_logger.h
+ * @brief Output layer — formats and transmits human-readable sensor and event messages.
+ *        HAL-dependent; omitted when BUILD_TESTS is defined.
+ */
 #ifndef UART_LOGGER_H
 #define UART_LOGGER_H
 

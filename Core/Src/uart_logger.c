@@ -1,3 +1,7 @@
+/**
+ * @file  uart_logger.c
+ * @brief Output layer — snprintf formatting and HAL_UART_Transmit for g-force and events.
+ */
 #include "uart_logger.h"
 
 #ifndef BUILD_TESTS

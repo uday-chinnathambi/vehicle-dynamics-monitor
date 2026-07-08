@@ -83,11 +83,11 @@
  
 ## Phase 6 — Integration, Validation & Documentation (Days 13–14)
  
-- [ ] End-to-end test on hardware: tilt/shake sensor and confirm correct event messages appear on serial terminal
-- [ ] Confirm all unit tests still pass after integration (`cmake -DBUILD_TESTS=ON` clean build)
-- [ ] Review code for modularity: sensor HAL layer fully separated from application logic layer
-- [ ] Add header comments and inline documentation throughout source files
-- [ ] Update README: hardware wiring diagram, CMake build commands, test commands, flash instructions, UART baud rate, test procedure
+- [x] End-to-end test on hardware: tilt/shake sensor and confirm correct event messages appear on serial terminal
+- [x] Confirm all unit tests still pass after integration (`cmake -DBUILD_TESTS=ON` clean build)
+- [x] Review code for modularity: sensor HAL layer fully separated from application logic layer
+- [x] Add header comments and inline documentation throughout source files
+- [x] Update README: hardware wiring diagram, CMake build commands, test commands, flash instructions, UART baud rate, test procedure
 - [ ] Record known limitations and draft future work backlog (filtering, RTOS, CAN output…)
 ---
  

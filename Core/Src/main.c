@@ -24,6 +24,7 @@
 #include "mpu6050.h"
 #include "vehicle_dynamics.h"
 #include "uart_logger.h"
+#include <stdio.h>
 #include <string.h>
 
 /* USER CODE END Includes */
@@ -63,7 +64,7 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+/* Integration layer: mpu6050 (sensor HAL) → vehicle_dynamics (pure logic) → uart_logger (output) */
 /* USER CODE END 0 */
 
 /**
