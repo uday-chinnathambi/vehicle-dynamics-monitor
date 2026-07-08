@@ -76,9 +76,9 @@
  
 - [x] Review and extend `test_vehicle_dynamics.c` with any edge cases uncovered during sensor work (e.g. simultaneous lateral + longitudinal events)
 - [x] Implement debounce logic using a minimum hold-count; write a test for it before implementing (`test_event_requires_hold_count`)
-- [ ] Wire `evaluate_dynamics()` into the main acquisition loop — inputs come from `raw_to_gforce()` output
-- [ ] Classify detected events and transmit human-readable UART messages via `uart_logger.c`
-- [ ] Run full test suite on host (`cmake --build build-test && ./build-test/tests/test_vehicle_dynamics`); all tests must pass before flashing
+- [x] Wire `evaluate_dynamics()` into the main acquisition loop — inputs come from `raw_to_gforce()` output
+- [x] Classify detected events and transmit human-readable UART messages via `uart_logger.c`
+- [x] Run full test suite on host (`cmake --build build-test && ./build-test/tests/test_vehicle_dynamics`); all tests must pass before flashing
 ---
  
 ## Phase 6 — Integration, Validation & Documentation (Days 13–14)

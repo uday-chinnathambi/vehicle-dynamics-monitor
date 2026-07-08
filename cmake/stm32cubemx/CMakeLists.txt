@@ -27,6 +27,7 @@ set(MX_Application_Src
     ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/startup_stm32f413xx.s
     ${CMAKE_SOURCE_DIR}/Core/Src/vehicle_dynamics.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/uart_logger.c
 )
 
 # STM32 HAL/LL Drivers

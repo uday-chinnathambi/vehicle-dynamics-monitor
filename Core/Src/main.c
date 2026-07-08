@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
 #include "vehicle_dynamics.h"
+#include "uart_logger.h"
 #include <string.h>
 
 /* USER CODE END Includes */
@@ -62,13 +63,7 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static const char * const EVENT_NAMES[] = {
-    "",
-    "HARSH_BRAKING",
-    "RAPID_ACCELERATION",
-    "CORNERING_LEFT",
-    "CORNERING_RIGHT"
-};
+
 /* USER CODE END 0 */
 
 /**
@@ -143,7 +138,6 @@ int main(void)
   {
     /* USER CODE END WHILE */
       uint8_t raw[MPU6050_ACCEL_RAW_BYTES] = {0U};
-      char tx_buf[MPU6050_UART_TX_BUF_SIZE];
 
       if((HAL_GetTick() - last_mpu_read) >= 1000U)
       {
@@ -154,25 +148,19 @@ int main(void)
             float x_g = raw_to_gforce(reconstruct_raw_value(raw[0], raw[1]), MPU6050_SENSITIVITY_4G);
             float y_g = raw_to_gforce(reconstruct_raw_value(raw[2], raw[3]), MPU6050_SENSITIVITY_4G);
             float z_g = raw_to_gforce(reconstruct_raw_value(raw[4], raw[5]), MPU6050_SENSITIVITY_4G);
-            snprintf(tx_buf, sizeof(tx_buf),
-                    "X:%+.3fg  Y:%+.3fg  Z:%+.3fg\r\n",
-                    x_g, y_g, z_g);
 
-            VehicleEvent raw_event      = evaluate_dynamics(x_g, y_g, z_g);
-            VehicleEvent confirm_event  = debounce_event(&debounce_state, raw_event, DEBOUNCE_HOLD_COUNT);
-            if (confirm_event != EVENT_NONE)
-            {
-                char evt_buf[40];
-                snprintf(evt_buf, sizeof(evt_buf), "EVENT: %s\r\n", EVENT_NAMES[confirm_event]);
-                HAL_UART_Transmit(&huart3, (uint8_t *)evt_buf, strlen(evt_buf), HAL_MAX_DELAY);
-            }
+            uart_log_accel(&huart3, x_g, y_g, z_g);
+
+            VehicleEvent raw_event     = evaluate_dynamics(x_g, y_g, z_g);
+            VehicleEvent confirm_event = debounce_event(&debounce_state, raw_event, DEBOUNCE_HOLD_COUNT);
+            uart_log_event(&huart3, confirm_event);
         }
         else
         {
-            snprintf(tx_buf, sizeof(tx_buf), "ACCEL READ FAILED\r\n");
+            char err_buf[] = "ACCEL READ FAILED\r\n";
+            HAL_UART_Transmit(&huart3, (uint8_t *)err_buf, sizeof(err_buf) - 1U, HAL_MAX_DELAY);
         }
 
-        HAL_UART_Transmit(&huart3, (uint8_t *)tx_buf, strlen(tx_buf), HAL_MAX_DELAY);
         HAL_GPIO_TogglePin(USR_LD1_GPIO_Port, USR_LD1_Pin);
         last_mpu_read = HAL_GetTick();
       }
