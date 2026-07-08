@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mpu6050.h"
+#include "vehicle_dynamics.h"
 #include <string.h>
 
 /* USER CODE END Includes */
@@ -61,7 +62,13 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static const char * const EVENT_NAMES[] = {
+    "",
+    "HARSH_BRAKING",
+    "RAPID_ACCELERATION",
+    "CORNERING_LEFT",
+    "CORNERING_RIGHT"
+};
 /* USER CODE END 0 */
 
 /**
@@ -98,6 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_StatusTypeDef mpu_status;
   uint32_t last_mpu_read = 0;
+  DebounceState debounce_state = {EVENT_NONE, 0U};
 
   mpu_status = mpu6050_wake(&hi2c1);
   if (mpu_status != HAL_OK)
@@ -142,12 +150,22 @@ int main(void)
         mpu_status = mpu6050_read_accel_raw(&hi2c1, raw, sizeof(raw));
         if (mpu_status == HAL_OK)
         {
+            /* x=longitudinal (fwd/back), y=lateral (left/right), z=vertical */
             float x_g = raw_to_gforce(reconstruct_raw_value(raw[0], raw[1]), MPU6050_SENSITIVITY_4G);
             float y_g = raw_to_gforce(reconstruct_raw_value(raw[2], raw[3]), MPU6050_SENSITIVITY_4G);
             float z_g = raw_to_gforce(reconstruct_raw_value(raw[4], raw[5]), MPU6050_SENSITIVITY_4G);
             snprintf(tx_buf, sizeof(tx_buf),
                     "X:%+.3fg  Y:%+.3fg  Z:%+.3fg\r\n",
                     x_g, y_g, z_g);
+
+            VehicleEvent raw_event      = evaluate_dynamics(x_g, y_g, z_g);
+            VehicleEvent confirm_event  = debounce_event(&debounce_state, raw_event, DEBOUNCE_HOLD_COUNT);
+            if (confirm_event != EVENT_NONE)
+            {
+                char evt_buf[40];
+                snprintf(evt_buf, sizeof(evt_buf), "EVENT: %s\r\n", EVENT_NAMES[confirm_event]);
+                HAL_UART_Transmit(&huart3, (uint8_t *)evt_buf, strlen(evt_buf), HAL_MAX_DELAY);
+            }
         }
         else
         {
